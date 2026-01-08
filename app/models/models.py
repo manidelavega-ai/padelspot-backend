@@ -81,3 +81,15 @@ class PushToken(Base):
     is_active = Column(Boolean, default=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+    
+class Club(Base):
+    __tablename__ = "clubs"
+    
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    doinsport_id = Column(UUID(as_uuid=True), nullable=False, unique=True)
+    name = Column(String(255), nullable=False)
+    slug = Column(String(100), unique=True)  # NOUVEAU: slug du club (ex: "legarden")
+    city = Column(String(100))
+    address = Column(String)
+    enabled = Column(Boolean, default=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())

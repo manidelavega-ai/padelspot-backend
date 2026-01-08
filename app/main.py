@@ -4,7 +4,7 @@ FastAPI application principale
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
-from app.api.routes import alerts, clubs, stripe, users
+from app.api.routes import alerts, clubs, stripe, users, clubs
 import logging
 
 # Configuration du logging
@@ -34,6 +34,7 @@ app.include_router(alerts.router)
 app.include_router(clubs.router)
 app.include_router(stripe.router)
 app.include_router(users.router)
+app.include_router(clubs.router)
 
 @app.get("/")
 async def root():
