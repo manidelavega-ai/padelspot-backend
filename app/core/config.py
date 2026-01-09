@@ -70,7 +70,7 @@ PLAN_QUOTAS = {
     "premium": {
         "max_alerts": 10,
         "check_interval_minutes": 3,
-        "min_days_ahead": 1,
+        "min_days_ahead": 0,
         "max_days_ahead": 60,
         "max_time_window_hours": 12,
         "available_intervals": [3],
