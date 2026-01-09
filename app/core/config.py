@@ -73,7 +73,7 @@ PLAN_QUOTAS = {
         "min_days_ahead": 1,
         "max_days_ahead": 60,
         "max_time_window_hours": 12,
-        "available_intervals": [3, 5, 10],
+        "available_intervals": [3],
     },
 }
 

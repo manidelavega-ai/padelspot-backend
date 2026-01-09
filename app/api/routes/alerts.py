@@ -19,21 +19,21 @@ router = APIRouter(prefix="/api/alerts", tags=["alerts"])
 # Quotas par plan MIS À JOUR
 PLAN_QUOTAS = {
     "free": {
-        "max_alerts": 1, 
-        "max_clubs": 1, 
-        "check_interval": 15,
-        "max_time_window_hours": 4,  # NOUVEAU: 4h max
-        "min_days_ahead": 1,  # NOUVEAU: À partir de demain
-        "max_days_ahead": 7   # NOUVEAU: Jusqu'à J+7
+        "max_alerts": 2,
+        "check_interval_minutes": 10,
+        "min_days_ahead": 1,
+        "max_days_ahead": 14,
+        "max_time_window_hours": 6,
+        "available_intervals": [10],
     },
     "premium": {
-        "max_alerts": 999, 
-        "max_clubs": 3, 
-        "check_interval": 1,
-        "max_time_window_hours": 24,  # NOUVEAU: 24h max
-        "min_days_ahead": 0,  # NOUVEAU: À partir d'aujourd'hui
-        "max_days_ahead": 90  # NOUVEAU: Jusqu'à J+90 (3 mois)
-    }
+        "max_alerts": 10,
+        "check_interval_minutes": 3,
+        "min_days_ahead": 1,
+        "max_days_ahead": 60,
+        "max_time_window_hours": 12,
+        "available_intervals": [3],
+    },
 }
 
 @router.post("", response_model=AlertResponse, status_code=status.HTTP_201_CREATED)
