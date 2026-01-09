@@ -3,7 +3,7 @@ Routes API pour la gestion des alertes
 """
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
+from sqlalchemy import select, and_, desc
 from app.core.database import get_db
 from app.core.auth import get_current_user
 from app.models.models import UserAlert, Club, Subscription, DetectedSlot
@@ -259,3 +259,49 @@ async def get_all_history(
     slots = result.scalars().all()
     
     return slots
+    
+@router.get("/history")
+async def get_all_history(
+    limit: int = 50,
+    current_user = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)
+):
+    """
+    Récupère tous les créneaux détectés pour l'utilisateur,
+    triés par date de détection (plus récents en premier).
+    """
+    # Récupérer les IDs des alertes de l'utilisateur
+    alerts_result = await db.execute(
+        select(UserAlert.id).where(UserAlert.user_id == current_user.id)
+    )
+    alert_ids = [row[0] for row in alerts_result.fetchall()]
+    
+    if not alert_ids:
+        return []
+    
+    # Récupérer les slots détectés
+    result = await db.execute(
+        select(DetectedSlot)
+        .where(DetectedSlot.alert_id.in_(alert_ids))
+        .order_by(desc(DetectedSlot.detected_at))
+        .limit(limit)
+    )
+    slots = result.scalars().all()
+    
+    return [
+        {
+            "id": str(slot.id),
+            "alert_id": str(slot.alert_id),
+            "club_id": str(slot.club_id),
+            "playground_id": str(slot.playground_id),
+            "playground_name": slot.playground_name,
+            "date": slot.date.isoformat(),
+            "start_time": slot.start_time.strftime("%H:%M"),
+            "duration_minutes": slot.duration_minutes,
+            "price_total": float(slot.price_total) if slot.price_total else None,
+            "indoor": slot.indoor,
+            "email_sent": slot.email_sent,
+            "detected_at": slot.detected_at.isoformat() if slot.detected_at else None,
+        }
+        for slot in slots
+    ]
