@@ -203,8 +203,8 @@ async def create_checkout_session(
         customer_id = await get_or_create_stripe_customer(db, current_user.id, current_user.email)
         
         # Définir URLs de retour
-        success_url = f"{settings.FRONTEND_URL}/premium?success=true&product={product_type}"
-        cancel_url = f"{settings.FRONTEND_URL}/premium?canceled=true"
+        success_url = f"{settings.API_URL}/api/redirect/premium-success?product={product_type}"
+        cancel_url = f"{settings.API_URL}/api/redirect/premium-cancel"
         
         checkout_session = stripe.checkout.Session.create(
             customer=customer_id,
@@ -417,3 +417,11 @@ async def stripe_webhook(
 async def redirect_to_app():
     """Redirige vers l'app mobile après le portal Stripe"""
     return RedirectResponse(url="krenoo://profile")
+    
+@router.get("/redirect/premium-success")
+async def redirect_premium_success(product: str = "premium"):
+    return RedirectResponse(url=f"krenoo://premium?success=true&product={product}")
+
+@router.get("/redirect/premium-cancel")
+async def redirect_premium_cancel():
+    return RedirectResponse(url="krenoo://premium?canceled=true")
