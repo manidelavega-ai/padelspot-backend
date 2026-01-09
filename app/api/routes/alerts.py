@@ -6,6 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, and_, desc
 from app.core.database import get_db
 from app.core.auth import get_current_user
+from app.core.config import PLAN_QUOTAS
 from app.models.models import UserAlert, Club, Subscription, DetectedSlot
 from app.schemas.schemas import AlertCreate, AlertResponse, AlertUpdate, DetectedSlotResponse
 from typing import List
@@ -16,25 +17,6 @@ import logging
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/alerts", tags=["alerts"])
 
-# Quotas par plan MIS À JOUR
-PLAN_QUOTAS = {
-    "free": {
-        "max_alerts": 2,
-        "check_interval_minutes": 10,
-        "min_days_ahead": 1,
-        "max_days_ahead": 14,
-        "max_time_window_hours": 6,
-        "available_intervals": [10],
-    },
-    "premium": {
-        "max_alerts": 10,
-        "check_interval_minutes": 3,
-        "min_days_ahead": 0,
-        "max_days_ahead": 60,
-        "max_time_window_hours": 12,
-        "available_intervals": [3],
-    },
-}
 
 @router.post("", response_model=AlertResponse, status_code=status.HTTP_201_CREATED)
 async def create_alert(
@@ -117,7 +99,7 @@ async def create_alert(
         time_from=alert_data.time_from,
         time_to=alert_data.time_to,
         indoor_only=alert_data.indoor_only,
-        check_interval_minutes=quota["check_interval"],
+        check_interval_minutes=quota.get("check_interval", quota.get("check_interval_minutes", 15)),
         baseline_scraped=False  # Sera fait au premier scan
     )
     
