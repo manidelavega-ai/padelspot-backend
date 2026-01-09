@@ -46,10 +46,9 @@ class UserBoost(Base):
     """Compteur de boosts disponibles pour un utilisateur"""
     __tablename__ = "user_boosts"
     
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    user_id = Column(UUID(as_uuid=True), nullable=False, unique=True)
+    # user_id est la PK (pas de colonne id séparée)
+    user_id = Column(UUID(as_uuid=True), primary_key=True)
     boost_count = Column(Integer, nullable=False, default=0)
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
 
 
